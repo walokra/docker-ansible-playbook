@@ -7,6 +7,7 @@ ENV BUILD_PACKAGES \
   curl \
   tar \
   openssh-client \
+  git \
   python \
   py-boto \
   py-dateutil \
@@ -39,7 +40,7 @@ RUN set -x && \
   	rm -rf /var/cache/apk/*
 
 RUN \
-  mkdir -p /etc/ansible/ /opt/ansible
+  mkdir -p /etc/ansible/ /ansible
 
 RUN \
   echo "[local]" >> /etc/ansible/hosts && \
@@ -47,18 +48,18 @@ RUN \
 
 RUN \
   curl -fsSL https://releases.ansible.com/ansible/ansible-${ANSIBLE_VERSION}.tar.gz -o ansible.tar.gz && \
-  tar -xzf ansible.tar.gz -C /opt/ansible --strip-components 1 && \
-  rm -fr ansible.tar.gz /opt/ansible/docs /opt/ansible/examples /opt/ansible/packaging
+  tar -xzf ansible.tar.gz -C /ansible --strip-components 1 && \
+  rm -fr ansible.tar.gz /ansible/docs /ansible/examples /ansible/packaging
 
 ENV ANSIBLE_GATHERING smart
 ENV ANSIBLE_HOST_KEY_CHECKING false
 ENV ANSIBLE_RETRY_FILES_ENABLED false
-ENV ANSIBLE_ROLES_PATH /opt/ansible/playbooks/roles
+ENV ANSIBLE_ROLES_PATH /ansible/playbooks/roles
 ENV ANSIBLE_SSH_PIPELINING True
-ENV PYTHONPATH /opt/ansible/lib
-ENV PATH /opt/ansible/bin:$PATH
-ENV ANSIBLE_LIBRARY /opt/ansible/library
+ENV PYTHONPATH /ansible/lib
+ENV PATH /ansible/bin:$PATH
+ENV ANSIBLE_LIBRARY /ansible/library
 
-WORKDIR /opt/ansible/playbooks
+WORKDIR /ansible/playbooks
 
 ENTRYPOINT ["ansible-playbook"]
