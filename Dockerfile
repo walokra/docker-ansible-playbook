@@ -1,13 +1,6 @@
 FROM alpine:3.6
 
-ENV ANSIBLE_VERSION 2.4.0.0
-ENV ANSIBLE_GATHERING smart
-ENV ANSIBLE_HOST_KEY_CHECKING false
-ENV ANSIBLE_RETRY_FILES_ENABLED false
-ENV ANSIBLE_ROLES_PATH /ansible/playbooks/roles
-ENV ANSIBLE_SSH_PIPELINING True
-ENV PATH /ansible/bin:$PATH
-ENV PYTHONPATH /ansible/lib
+ENV ANSIBLE_VERSION 2.3.0.0
 
 ENV BUILD_PACKAGES \
   bash \
@@ -32,6 +25,10 @@ RUN apk --update add --virtual build-dependencies \
   openssl-dev \
   python-dev
 
+# If installing ansible@testing
+#RUN \
+#	echo "@testing http://nl.alpinelinux.org/alpine/edge/testing" >> #/etc/apk/repositories
+
 RUN set -x && \
     apk update && apk upgrade && \
     apk add --no-cache ${BUILD_PACKAGES} && \
@@ -42,7 +39,7 @@ RUN set -x && \
   	rm -rf /var/cache/apk/*
 
 RUN \
-  mkdir /etc/ansible/ /ansible
+  mkdir -p /etc/ansible/ /opt/ansible
 
 RUN \
   echo "[local]" >> /etc/ansible/hosts && \
@@ -50,11 +47,18 @@ RUN \
 
 RUN \
   curl -fsSL https://releases.ansible.com/ansible/ansible-${ANSIBLE_VERSION}.tar.gz -o ansible.tar.gz && \
-  tar -xzf ansible.tar.gz -C ansible --strip-components 1 && \
-  rm -fr ansible.tar.gz /ansible/docs /ansible/examples /ansible/packaging
+  tar -xzf ansible.tar.gz -C /opt/ansible --strip-components 1 && \
+  rm -fr ansible.tar.gz /opt/ansible/docs /opt/ansible/examples /opt/ansible/packaging
 
-RUN mkdir -p /ansible/playbooks
+ENV ANSIBLE_GATHERING smart
+ENV ANSIBLE_HOST_KEY_CHECKING false
+ENV ANSIBLE_RETRY_FILES_ENABLED false
+ENV ANSIBLE_ROLES_PATH /opt/ansible/playbooks/roles
+ENV ANSIBLE_SSH_PIPELINING True
+ENV PYTHONPATH /opt/ansible/lib
+ENV PATH /opt/ansible/bin:$PATH
+ENV ANSIBLE_LIBRARY /opt/ansible/library
 
-WORKDIR /ansible/playbooks
+WORKDIR /opt/ansible/playbooks
 
 ENTRYPOINT ["ansible-playbook"]

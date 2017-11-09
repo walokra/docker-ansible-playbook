@@ -8,6 +8,17 @@ Docker Image of Ansible for executing ansible-playbook command against an extern
 docker build -t walokra/ansible-playbook .
 ```
 
+### Test
+
+```
+$ docker run --name ansible-playbook --rm walokra/ansible-playbook --version
+
+ansible-playbook 2.3.0.0
+  config file =
+  configured module search path = [u'/opt/ansible/library']
+  python version = 2.7.13 (default, Apr 20 2017, 12:13:37) [GCC 6.3.0]
+```
+
 ## Running Ansible Playbook
 
 ```
