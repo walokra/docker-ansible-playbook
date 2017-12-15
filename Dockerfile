@@ -7,6 +7,7 @@ ENV BUILD_PACKAGES \
   curl \
   tar \
   openssh-client \
+  sshpass \
   git \
   python \
   py-boto \
