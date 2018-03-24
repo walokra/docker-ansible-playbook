@@ -1,6 +1,6 @@
-FROM alpine:3.6
+FROM alpine:3.7
 
-ENV ANSIBLE_VERSION 2.3.0.0
+ENV ANSIBLE_VERSION 2.5.0
 
 ENV BUILD_PACKAGES \
   bash \
@@ -16,41 +16,42 @@ ENV BUILD_PACKAGES \
   py-jinja2 \
   py-paramiko \
   py-pip \
-  py-setuptools \
   py-yaml \
   ca-certificates
-
-RUN apk --update add --virtual build-dependencies \
-  gcc \
-  musl-dev \
-  libffi-dev \
-  openssl-dev \
-  python-dev
 
 # If installing ansible@testing
 #RUN \
 #	echo "@testing http://nl.alpinelinux.org/alpine/edge/testing" >> #/etc/apk/repositories
 
 RUN set -x && \
+    \
+    echo "==> Adding build-dependencies..."  && \
+    apk --update add --virtual build-dependencies \
+      gcc \
+      musl-dev \
+      libffi-dev \
+      openssl-dev \
+      python-dev && \
+    \
+    echo "==> Upgrading apk and system..."  && \
     apk update && apk upgrade && \
+    \
+    echo "==> Adding Python runtime..."  && \
     apk add --no-cache ${BUILD_PACKAGES} && \
     pip install --upgrade pip && \
     pip install python-keyczar docker-py && \
-    # Cleaning up
+    \
+    echo "==> Installing Ansible..."  && \
+    pip install ansible==${ANSIBLE_VERSION} && \
+    \
+    echo "==> Cleaning up..."  && \
     apk del build-dependencies && \
-  	rm -rf /var/cache/apk/*
-
-RUN \
-  mkdir -p /etc/ansible/ /ansible
-
-RUN \
-  echo "[local]" >> /etc/ansible/hosts && \
-  echo "localhost" >> /etc/ansible/hosts
-
-RUN \
-  curl -fsSL https://releases.ansible.com/ansible/ansible-${ANSIBLE_VERSION}.tar.gz -o ansible.tar.gz && \
-  tar -xzf ansible.tar.gz -C /ansible --strip-components 1 && \
-  rm -fr ansible.tar.gz /ansible/docs /ansible/examples /ansible/packaging
+    rm -rf /var/cache/apk/* && \
+    \
+    echo "==> Adding hosts for convenience..."  && \
+    mkdir -p /etc/ansible /ansible && \
+    echo "[local]" >> /etc/ansible/hosts && \
+    echo "localhost" >> /etc/ansible/hosts
 
 ENV ANSIBLE_GATHERING smart
 ENV ANSIBLE_HOST_KEY_CHECKING false
