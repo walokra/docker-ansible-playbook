@@ -3,7 +3,7 @@ FROM alpine:${ALPINE_VERSION}
 
 LABEL maintainer="Marko Wallin"
 
-ARG ANSIBLE_VERSION="2.9.6"
+ARG ANSIBLE_VERSION="2.9.13"
 
 ENV BUILD_PACKAGES \
   bash \

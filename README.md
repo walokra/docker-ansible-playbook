@@ -13,7 +13,7 @@ docker build -t walokra/ansible-playbook .
 ```shell
 $ docker run --name ansible-playbook --rm walokra/ansible-playbook --version
 
-ansible-playbook 2.9.6
+ansible-playbook 2.9.13
   config file = None
   configured module search path = ['/ansible/library']
   python version = 3.8.3 (default, May 15 2020, 01:53:50) [GCC 9.3.0]
