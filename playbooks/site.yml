@@ -1,0 +1,14 @@
+---
+- hosts: localhost
+
+  tasks:
+
+  - name: Return content from given URL
+    uri:
+      url: "{{ url }}"
+      return_content: yes
+    register: webpage
+
+  - name: debug results
+    debug:
+      msg: "{{webpage.content}}"
